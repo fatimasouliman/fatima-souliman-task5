@@ -2,7 +2,7 @@ const main = document.querySelector(".main");
 const btnFirst = document.querySelector(".first");
 const btnSecond = document.querySelector(".second");
 const btnThird = document.querySelector(".third");
-const input = document.querySelector(".input input");
+
 const circles = document.querySelector(".circles");
 
 let data = [];
@@ -66,23 +66,18 @@ let y=10;
   };
   
 
-async function fetchProuduct() {
+async function fetchProuduct(x ,y) {
     await fetch("https://dummyjson.com/products")
     .then((res) => res.json())
     .then((res) => (data=res.products));
+    for (let i = x; i < y; i++) {  
+      const item = data[i];
+      appendNewProduct(item.images[0] , item.title , item.description , item.rating , item.brand , item.price , item.category); 
+  }
 }
 
-async function add1(x,y) {
-  for (let i = x; i < y; i++) {  
-    const item = data[i];
-    await fetchProuduct();
-    appendNewProduct(item.images[0] , item.title , item.description , item.rating , item.brand , item.price , item.category); 
-}
-}
-
-async function ten(x,y) {
-  await fetchProuduct(); 
-  add1(x,y);
+function ten(x,y) {
+  fetchProuduct(x , y);
 }
 
 ten(x=0,y=10);
@@ -131,23 +126,24 @@ btnThird.addEventListener('click' , () => {
   
 });
 
-
+const input = document.querySelector(".input input");
 async function search() {
   main.innerHTML = "";
   circles.style.visibility = "hidden";
+  const searchValue = input.value.toUpperCase();
   const back = document.createElement("button");
   back.innerText="Back"
   back.classList.add("back");
   main.appendChild(back);
   back.addEventListener('click' ,  () =>{
-    main.innerHTML ="";
+    main.innerHTML = "";
+    input.value = ""; 
     circles.style.visibility = "visible";
-    ten(x = 0 , y = 10);
+    fetchProuduct( 0 , 10 );
   });
   await fetchProuduct()
   for (let i = 0; i < data.length; i++) {
     const item = data[i];
-    const searchValue = input.value.toUpperCase();
     if(item.title.toUpperCase().indexOf(searchValue) > -1 || item.brand.toUpperCase().indexOf(searchValue) > -1 || item.category.toUpperCase().indexOf(searchValue) > -1){
       appendNewProduct(item.images[0] , item.title , item.description , item.rating , item.brand , item.price , item.category); 
     }
